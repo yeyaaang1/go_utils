@@ -1,4 +1,4 @@
-package utils
+package AES
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"crypto/cipher"
 	"encoding/base64"
 	"errors"
-	"gitee.com/super_step/go_utils/randString"
+	"gitee.com/super_step/go_utils/rand"
 	"github.com/kataras/golog"
 )
 
@@ -15,8 +15,8 @@ import (
 */
 
 type AES interface {
-	DesaltDecrypt(Encrypt string) string
-	SaltyEncrypt(word string) string
+	DesaltDecrypt(encrypt string) string
+	SaltyEncrypt(password string) string
 }
 
 type myAes struct {
@@ -79,7 +79,7 @@ func (AES *myAes) SaltyEncrypt(word string) string {
 			golog.Default.Error("加盐编码出错", err)
 		}
 	}()
-	word = randString.RandRunes(16) + word
+	word = rand.RandRunes(16) + word
 	result, err := AES.myEncrypt([]byte(word))
 	if err != nil {
 		return ""

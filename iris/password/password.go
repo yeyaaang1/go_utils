@@ -1,4 +1,4 @@
-package utils
+package password
 
 import (
 	"github.com/kataras/golog"
