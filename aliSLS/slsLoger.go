@@ -2,11 +2,11 @@ package aliSLS
 
 import (
 	"fmt"
+	"gitee.com/super_step/go_utils/myError"
 	sls "github.com/aliyun/aliyun-log-go-sdk"
 	"github.com/aliyun/aliyun-log-go-sdk/producer"
 	"github.com/golang/protobuf/proto"
 	"github.com/kataras/golog"
-	"go_utils/myError"
 	"runtime"
 	"time"
 )
