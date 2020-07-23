@@ -15,7 +15,7 @@ func doInit() {
 	initFlag = true
 }
 
-func RandStringRunes(n int) string {
+func RandRunes(n int) string {
 	doInit()
 	b := make([]rune, n)
 	for i := range b {

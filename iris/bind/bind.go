@@ -3,7 +3,7 @@ package bind
 import (
 	"encoding/json"
 	"errors"
-	"gitee.com/zhoutao_890118/go_utils/myError"
+	"gitee.com/super_step/go_utils/myError"
 	"github.com/go-playground/validator/v10"
 	"github.com/kataras/iris/v12"
 	"reflect"

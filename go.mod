@@ -1,4 +1,4 @@
-module gitee.com/zhoutao_890118/go_utils
+module gitee.com/super_step/go_utils
 
 go 1.14
 

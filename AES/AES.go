@@ -6,8 +6,8 @@ import (
 	"crypto/cipher"
 	"encoding/base64"
 	"errors"
+	"gitee.com/super_step/go_utils/randString"
 	"github.com/kataras/golog"
-	"go_utils/randString"
 )
 
 /*CBC加密 按照golang标准库的例子代码
@@ -79,7 +79,7 @@ func (AES *myAes) SaltyEncrypt(word string) string {
 			golog.Default.Error("加盐编码出错", err)
 		}
 	}()
-	word = randString.RandStringRunes(16) + word
+	word = randString.RandRunes(16) + word
 	result, err := AES.myEncrypt([]byte(word))
 	if err != nil {
 		return ""

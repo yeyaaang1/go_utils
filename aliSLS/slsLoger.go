@@ -2,7 +2,7 @@ package aliSLS
 
 import (
 	"fmt"
-	"gitee.com/zhoutao_890118/go_utils/myError"
+	"gitee.com/super_step/go_utils/myError"
 	sls "github.com/aliyun/aliyun-log-go-sdk"
 	"github.com/aliyun/aliyun-log-go-sdk/producer"
 	"github.com/golang/protobuf/proto"
