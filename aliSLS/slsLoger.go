@@ -37,6 +37,7 @@ type myProducer struct {
 	project  string
 	logStore string
 	topic    string
+	source   string
 
 	level golog.Level
 }
@@ -54,17 +55,26 @@ func (pro *myProducer) Send(contents []*sls.LogContent) (err error) {
 	return
 }
 
-func (pro *myProducer) getSource(skip ...int) string {
-	tmpSkip := 2
+func (pro *myProducer) getSource(skip ...int) (resSkip int) {
+	resSkip = 2
 	if len(skip) > 0 {
-		tmpSkip += skip[0]
+		resSkip += skip[0]
 	}
-	pc, file, line, _ := runtime.Caller(tmpSkip)
-	return fmt.Sprintf("%s(%d): %s", file, line, runtime.FuncForPC(pc).Name())
+	return resSkip
+	// pc, file, line, _ := runtime.Caller(tmpSkip)
+	// return fmt.Sprintf("%s(%d): %s", file, line, runtime.FuncForPC(pc).Name())
 }
 
-func (pro *myProducer) send(source string, contents []*sls.LogContent) (err error) {
-	err = pro.producer.SendLog(pro.project, pro.logStore, pro.topic, source, &sls.Log{
+func (pro *myProducer) send(skip int, contents []*sls.LogContent) (err error) {
+	pc, file, line, _ := runtime.Caller(skip)
+	contents = append(contents, &sls.LogContent{
+		Key:   proto.String("file"),
+		Value: proto.String(fmt.Sprintf("%s(%d)", file, line)),
+	}, &sls.LogContent{
+		Key:   proto.String("func"),
+		Value: proto.String(runtime.FuncForPC(pc).Name()),
+	})
+	err = pro.producer.SendLog(pro.project, pro.logStore, pro.topic, pro.source, &sls.Log{
 		Time:     proto.Uint32(uint32(time.Now().Unix())),
 		Contents: contents,
 	})
@@ -126,7 +136,7 @@ func GetSLSHandler(level golog.Level) (handler func(l *golog.Log) bool, err erro
 	return
 }
 
-func GetSLS(endpoint, keyID, keySecret, project, logStore, topic string) SLSAgent {
+func GetSLS(endpoint, keyID, keySecret, project, logStore, topic, source string) SLSAgent {
 	if onlyProducer.producer == nil {
 		producerConfig := producer.GetDefaultProducerConfig()
 		producerConfig.Endpoint = endpoint
@@ -143,6 +153,7 @@ func GetSLS(endpoint, keyID, keySecret, project, logStore, topic string) SLSAgen
 			logStore: logStore,
 			topic:    topic,
 			level:    golog.InfoLevel,
+			source:   source,
 		}
 	}
 	return &onlyProducer
