@@ -36,7 +36,7 @@ func (logger *MyDBLogger) Print(values ...interface{}) {
 		messages = append(messages, sql)
 		messages = append(messages, fmt.Sprintf(" \n\033[36;31m[%v]\033[0m ", strconv.FormatInt(values[5].(int64), 10)+" rows affected or returned "))
 		if logger.SuccessCallback != nil {
-			rows := values[5].(int)
+			rows := int(values[5].(int64))
 			source := fmt.Sprintf("%v", values[1])
 			logger.SuccessCallback(sql, source, rows, duration)
 		}
