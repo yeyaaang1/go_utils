@@ -21,22 +21,16 @@ type SLSConfig struct {
 }
 
 type SLSAgent interface {
-	// 设置程序标志
-	// SetProject(project string)
-	// 设置容器标志
-	// SetLogStore(logStore string)
+	// 发送自定义日志
+	SendCustomize(contents []*sls.LogContent) error
 	// 发送日志
-	Send(Contents []*sls.LogContent) error
-	// 发送json
-	// SendJson()
+	Send(contents []*sls.LogContent, skip ...int) (err error)
 	// 发送map
 	SendMap(mapContents map[string]string) (err error)
 	// 带超时的关闭
 	Close(timeoutMs int64) error
 	// 安全关闭
 	SafeClose()
-	// logger的handler
-	// SLSHandler(l *golog.Log) bool
 }
 
 var onlyProducer myProducer
@@ -59,8 +53,8 @@ func (pro *myProducer) SetLogStore(logStore string) {
 	pro.logStore = logStore
 }
 
-func (pro *myProducer) Send(contents []*sls.LogContent) (err error) {
-	err = pro.send(pro.getSource(), contents)
+func (pro *myProducer) Send(contents []*sls.LogContent, skip ...int) (err error) {
+	err = pro.send(pro.getSource(skip...), contents)
 	return
 }
 
@@ -70,8 +64,18 @@ func (pro *myProducer) getSource(skip ...int) (resSkip int) {
 		resSkip += skip[0]
 	}
 	return resSkip
-	// pc, file, line, _ := runtime.Caller(tmpSkip)
-	// return fmt.Sprintf("%s(%d): %s", file, line, runtime.FuncForPC(pc).Name())
+}
+
+func (pro *myProducer) SendCustomize(contents []*sls.LogContent) error {
+	return pro._send(contents)
+}
+
+func (pro *myProducer) _send(contents []*sls.LogContent) (err error) {
+	err = pro.producer.SendLog(pro.project, pro.logStore, pro.topic, pro.source, &sls.Log{
+		Time:     proto.Uint32(uint32(time.Now().Unix())),
+		Contents: contents,
+	})
+	return
 }
 
 func (pro *myProducer) send(skip int, contents []*sls.LogContent) (err error) {
@@ -83,11 +87,7 @@ func (pro *myProducer) send(skip int, contents []*sls.LogContent) (err error) {
 		Key:   proto.String("func"),
 		Value: proto.String(runtime.FuncForPC(pc).Name()),
 	})
-	err = pro.producer.SendLog(pro.project, pro.logStore, pro.topic, pro.source, &sls.Log{
-		Time:     proto.Uint32(uint32(time.Now().Unix())),
-		Contents: contents,
-	})
-	return
+	return pro._send(contents)
 }
 
 func (pro *myProducer) SendMap(mapContents map[string]string) (err error) {
