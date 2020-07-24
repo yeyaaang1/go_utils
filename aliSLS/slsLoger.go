@@ -11,6 +11,15 @@ import (
 	"time"
 )
 
+type SLSConfig struct {
+	Endpoint        string `json:"endpoint"`
+	AccessKeyID     string `json:"access_key_id"`
+	AccessKeySecret string `json:"access_key_secret"`
+	Project         string `json:"project"`
+	LogStore        string `json:"log_store"`
+	Topic           string `json:"topic"`
+}
+
 type SLSAgent interface {
 	// 设置程序标志
 	// SetProject(project string)
