@@ -81,10 +81,11 @@ func (middleware *exceptionMiddleware) sendMail(log errorLog) {
 }
 
 func GetExceptionMiddleware(mode, appName string, logger *golog.Logger, mailConfig *appConfig.Mail) func(ctx iris.Context) {
-	return exceptionMiddleware{
+	middleware := exceptionMiddleware{
 		mode:       mode,
 		appName:    appName,
 		logger:     logger,
 		mailConfig: mailConfig,
-	}.handler
+	}
+	return middleware.handler
 }

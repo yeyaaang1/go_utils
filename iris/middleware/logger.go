@@ -26,7 +26,8 @@ func (middleware *loggerMiddleware) handler(ctx iris.Context) {
 }
 
 func GetLoggerMiddleware(logger *golog.Logger) func(ctx iris.Context) {
-	return loggerMiddleware{
+	middleware := loggerMiddleware{
 		logger: logger,
-	}.handler
+	}
+	return middleware.handler
 }
