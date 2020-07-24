@@ -84,7 +84,21 @@ func (pro *myProducer) SendCustomizeMap(mapContents map[string]string) error {
 	return pro._send(contents)
 }
 
+func (pro *myProducer) addDefaultType(contents []*sls.LogContent) {
+	keyType := proto.String("type")
+	for _, content := range contents {
+		if content.Key == keyType {
+			return
+		}
+	}
+	contents = append(contents, &sls.LogContent{
+		Key:   keyType,
+		Value: proto.String("default"),
+	})
+}
+
 func (pro *myProducer) _send(contents []*sls.LogContent) (err error) {
+	pro.addDefaultType(contents)
 	err = pro.producer.SendLog(pro.project, pro.logStore, pro.topic, pro.source, &sls.Log{
 		Time:     proto.Uint32(uint32(time.Now().Unix())),
 		Contents: contents,
