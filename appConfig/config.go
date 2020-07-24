@@ -15,6 +15,7 @@ type SLSConfig struct {
 	Project         string `json:"project"`
 	LogStore        string `json:"log_store"`
 	Topic           string `json:"topic"`
+	Source          string `json:"source"`
 }
 
 type DataBase struct {
