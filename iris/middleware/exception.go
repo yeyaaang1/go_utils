@@ -21,9 +21,6 @@ type errorLog struct {
 	Error      interface{}
 }
 
-type ExceptionMiddleware interface {
-}
-
 type exceptionMiddleware struct {
 	mode       string
 	appName    string
@@ -83,11 +80,11 @@ func (middleware *exceptionMiddleware) sendMail(log errorLog) {
 	}
 }
 
-func GetExceptionMiddleware(mode, appName string, logger *golog.Logger, mailConfig *appConfig.Mail) ExceptionMiddleware {
-	return &exceptionMiddleware{
+func GetExceptionMiddleware(mode, appName string, logger *golog.Logger, mailConfig *appConfig.Mail) func(ctx iris.Context) {
+	return exceptionMiddleware{
 		mode:       mode,
 		appName:    appName,
 		logger:     logger,
 		mailConfig: mailConfig,
-	}
+	}.handler
 }

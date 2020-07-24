@@ -5,10 +5,6 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type LoggerMiddleware interface {
-	handler(ctx iris.Context)
-}
-
 type loggerMiddleware struct {
 	logger *golog.Logger
 }
@@ -29,8 +25,8 @@ func (middleware *loggerMiddleware) handler(ctx iris.Context) {
 	return
 }
 
-func GetLoggerMiddleware(logger *golog.Logger) LoggerMiddleware {
-	return &loggerMiddleware{
+func GetLoggerMiddleware(logger *golog.Logger) func(ctx iris.Context) {
+	return loggerMiddleware{
 		logger: logger,
-	}
+	}.handler
 }
