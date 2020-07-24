@@ -156,6 +156,9 @@ func (pro *myProducer) slsHandler(l *golog.Log) bool {
 		}, {
 			Key:   proto.String("msg"),
 			Value: proto.String(l.Message),
+		}, {
+			Key:   proto.String("type"),
+			Value: proto.String("log"),
 		},
 	}
 	// fmt.Println(string(debug.Stack()))
