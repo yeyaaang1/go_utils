@@ -23,6 +23,8 @@ type SLSConfig struct {
 type SLSAgent interface {
 	// 发送自定义日志
 	SendCustomize(contents []*sls.LogContent) error
+	// 发送自定义map
+	SendCustomizeMap(mapContents map[string]string) error
 	// 发送日志
 	Send(contents []*sls.LogContent, skip ...int) (err error)
 	// 发送map
@@ -67,6 +69,18 @@ func (pro *myProducer) getSource(skip ...int) (resSkip int) {
 }
 
 func (pro *myProducer) SendCustomize(contents []*sls.LogContent) error {
+	return pro._send(contents)
+}
+
+func (pro *myProducer) SendCustomizeMap(mapContents map[string]string) error {
+	var contents []*sls.LogContent
+	for key, value := range mapContents {
+		// 将value转换为string类型
+		contents = append(contents, &sls.LogContent{
+			Key:   proto.String(key),
+			Value: proto.String(value),
+		})
+	}
 	return pro._send(contents)
 }
 
