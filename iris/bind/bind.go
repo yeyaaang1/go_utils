@@ -6,6 +6,7 @@ import (
 	"gitee.com/super_step/go_utils/myError"
 	"github.com/go-playground/validator/v10"
 	"github.com/kataras/iris/v12"
+	"google.golang.org/protobuf/proto"
 	"reflect"
 	"runtime"
 	"strings"
@@ -48,6 +49,9 @@ func Bind(ctx iris.Context, params interface{}, customize ...func(fl validator.F
 		contentType := ctx.GetContentTypeRequested()
 		if strings.Contains(contentType, "application/json") {
 			err = ctx.ReadJSON(params)
+		} else if contentType == "application/binary" {
+			body, _ := ctx.GetBody()
+			err = proto.Unmarshal(body, params.(proto.Message))
 		} else {
 			err = ctx.ReadForm(params)
 		}
