@@ -17,15 +17,19 @@ import (
 type AES interface {
 	DesaltDecrypt(encrypt string) string
 	SaltyEncrypt(password string) string
+	Decrypt(encrypt []byte) string
+	Encrypt(password string) []byte
 }
 
 type myAes struct {
 	key string
+	iv  []byte
 }
 
-func NewAES(key string) AES {
+func NewAES(key string, iv []byte) AES {
 	return &myAes{
 		key: key,
+		iv:  iv,
 	}
 }
 
@@ -87,6 +91,33 @@ func (AES *myAes) SaltyEncrypt(word string) string {
 	return result
 }
 
+func (AES *myAes) Decrypt(encrypt []byte) string {
+	// 处理传入的key
+	AESKey, err := base64.StdEncoding.DecodeString(AES.key)
+	if err != nil {
+		return ""
+	}
+	decryptResult, err := AES.myAesCBCDecrypt(encrypt, AESKey)
+	if err != nil {
+		return ""
+	}
+	return string(decryptResult)
+}
+
+func (AES *myAes) Encrypt(password string) (decryptResult []byte) {
+	// 处理传入的key
+	AESKey, err := base64.StdEncoding.DecodeString(AES.key)
+	if err != nil {
+		return
+	}
+	data, err := base64.StdEncoding.DecodeString(password)
+	if err != nil {
+		return
+	}
+	decryptResult, err = AES.myAesCBCEncrypt(data, AESKey)
+	return
+}
+
 func (AES *myAes) myEncrypt(rawData []byte) (string, error) {
 	// 处理传入的key
 	AESKey, err := base64.StdEncoding.DecodeString(AES.key + "=")
@@ -100,7 +131,7 @@ func (AES *myAes) myEncrypt(rawData []byte) (string, error) {
 	return base64.StdEncoding.EncodeToString(data), nil
 }
 
-func (AES *myAes) myAesCBCDecrypt(encryptData, key []byte) (encryptResult []byte, err error) {
+func (AES *myAes) myAesCBCDecrypt(encryptData, key []byte) (decryptResult []byte, err error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return
@@ -117,13 +148,19 @@ func (AES *myAes) myAesCBCDecrypt(encryptData, key []byte) (encryptResult []byte
 		return
 	}
 	// 设置iv初始向量为key的前16字节
-	iv := key[:blockSize]
-	mode := cipher.NewCBCDecrypter(block, iv)
+	mode := cipher.NewCBCDecrypter(block, AES.getIV(key, blockSize))
 	// CryptBlocks can work in-place if the two arguments are the same.
 	mode.CryptBlocks(encryptData, encryptData)
 	// 解填充
-	encryptResult = AES.pCks7UnPadding(encryptData)
+	decryptResult = AES.pCks7UnPadding(encryptData)
 	return
+}
+
+func (AES *myAes) getIV(key []byte, blockSize int) []byte {
+	if len(AES.iv) == 0 {
+		AES.iv = key[:blockSize]
+	}
+	return AES.iv
 }
 
 // aes加密，填充秘钥key的16位，24,32分别对应AES-128, AES-192, or AES-256.
@@ -137,11 +174,8 @@ func (AES *myAes) myAesCBCEncrypt(rawData, key []byte) (result []byte, err error
 	rawData = AES.pCks7Padding(rawData, blockSize)
 	// 初始向量IV必须是唯一，但不需要保密
 	result = make([]byte, len(rawData))
-	// block大小 16
-	iv := key[:blockSize]
-
 	// block大小和初始向量大小一定要一致
-	mode := cipher.NewCBCEncrypter(block, iv)
+	mode := cipher.NewCBCEncrypter(block, AES.getIV(key, blockSize))
 	mode.CryptBlocks(result, rawData)
 	return
 }
