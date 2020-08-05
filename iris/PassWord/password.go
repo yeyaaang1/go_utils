@@ -1,4 +1,4 @@
-package password
+package PassWord
 
 import (
 	"github.com/kataras/golog"
