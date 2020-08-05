@@ -2,7 +2,6 @@ package timeTool
 
 import (
 	"fmt"
-	"math"
 	"time"
 )
 
@@ -43,7 +42,7 @@ func TimeStampToDuration(inTime int64) string {
 	now := time.Now().Unix()
 	seconds := now - inTime
 	if seconds < 0 {
-		return fmt.Sprintf("%d秒后", math.Abs(seconds))
+		return fmt.Sprintf("%d秒后", -seconds)
 	} else if seconds < minute {
 		return fmt.Sprintf("%d秒前", seconds)
 	} else if seconds < hour {
