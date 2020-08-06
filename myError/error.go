@@ -38,6 +38,12 @@ func getFormat(format string, args []interface{}) string {
 func Warp(err error, format string, args ...interface{}) *Error {
 	var where string
 	format = getFormat(format, args)
+	if err == nil {
+		return &Error{
+			msg:   format,
+			where: getWhere(),
+		}
+	}
 	switch t := err.(type) {
 	case *Error:
 		// 继承where
