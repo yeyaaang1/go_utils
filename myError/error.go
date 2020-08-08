@@ -15,6 +15,14 @@ func (e *Error) Error() string {
 		e.where, e.msg)
 }
 
+func (e *Error) GetMsg() string {
+	return e.msg
+}
+
+func (e *Error) GetWhere() string {
+	return e.msg
+}
+
 func New(format string, args ...interface{}) *Error {
 	where := getWhere()
 	format = getFormat(format, args)

@@ -63,7 +63,7 @@ func Result(httpCode int, restData RestData, err error, log ...bool) mvc.Result 
 	}
 	if err != nil {
 		golog.Default.Error(err.Error())
-		result["error"] = err.Error()
+		result["error"] = ErrorFormat(err)
 	}
 	var logout bool
 	if len(log) > 0 {
