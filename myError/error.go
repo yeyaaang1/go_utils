@@ -7,11 +7,12 @@ import (
 
 type Error struct {
 	msg   string
-	where string
+	where []string
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("%s: %s", e.where, e.msg)
+	return fmt.Sprintf("{\"where\":\"%v\", \"msg\": \"%s\"}",
+		e.where, e.msg)
 }
 
 func New(format string, args ...interface{}) *Error {
@@ -19,7 +20,7 @@ func New(format string, args ...interface{}) *Error {
 	format = getFormat(format, args)
 	return &Error{
 		msg:   format,
-		where: where,
+		where: []string{where},
 	}
 }
 
@@ -36,26 +37,27 @@ func getFormat(format string, args []interface{}) string {
 }
 
 func Warp(err error, format string, args ...interface{}) *Error {
-	var where string
+	where := getWhere()
 	format = getFormat(format, args)
 	if err == nil {
 		return &Error{
 			msg:   format,
-			where: getWhere(),
+			where: []string{where},
 		}
 	}
+	var whereSlice []string
 	switch t := err.(type) {
 	case *Error:
 		// 继承where
-		where = t.where
+		whereSlice = append(t.where, where)
 		// 拼接上之前的错误
 		format = t.msg + " -> " + format
 	default:
-		where = getWhere()
+		whereSlice = []string{where}
 		format = format + " -> " + err.Error()
 	}
 	return &Error{
 		msg:   format,
-		where: where,
+		where: whereSlice,
 	}
 }
