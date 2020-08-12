@@ -32,6 +32,8 @@ require (
 	github.com/yudai/pp v2.0.1+incompatible // indirect
 	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59
 	golang.org/x/sys v0.0.0-20200722175500-76b94024e4b6 // indirect
+	google.golang.org/protobuf v1.23.0
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
+	gorm.io/gorm v0.2.29
 )
