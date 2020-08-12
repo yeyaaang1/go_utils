@@ -54,7 +54,8 @@ const (
 
 func (dbLogger *dbLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
 	elapsed := time.Since(begin)
-	sql, rows, file, msElapsed := dbLogger.getSqlInfo(fc, elapsed)
+	file := utils.FileWithLineNum()
+	sql, rows, msElapsed := dbLogger.getSqlInfo(fc, elapsed)
 	switch {
 	case err != nil && dbLogger.LogLevel >= gormLogger.Error:
 		golog.Default.Errorf(DBFmtWithError, msElapsed, rows, sql, file, err.Error())
@@ -68,9 +69,8 @@ func (dbLogger *dbLogger) Trace(ctx context.Context, begin time.Time, fc func() 
 	}
 }
 
-func (dbLogger *dbLogger) getSqlInfo(fc func() (string, int64), elapsed time.Duration) (string, int64, string, float64) {
+func (dbLogger *dbLogger) getSqlInfo(fc func() (string, int64), elapsed time.Duration) (string, int64, float64) {
 	sql, rows := fc()
-	file := utils.FileWithLineNum()
 	msElapsed := float64(elapsed.Nanoseconds()) / 1e6
-	return sql, rows, file, msElapsed
+	return sql, rows, msElapsed
 }
