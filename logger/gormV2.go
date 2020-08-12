@@ -53,17 +53,18 @@ const (
 )
 
 func (dbLogger *dbLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
-	if dbLogger.LogLevel > 0 {
-		elapsed := time.Since(begin)
-		sql, rows, file, msElapsed := dbLogger.getSqlInfo(fc, elapsed)
-		switch {
-		case err != nil && dbLogger.LogLevel >= gormLogger.Error:
-			golog.Default.Errorf(DBFmtWithError, msElapsed, rows, sql, file, err.Error())
-		case elapsed > dbLogger.SlowThreshold && dbLogger.SlowThreshold != 0 && dbLogger.LogLevel >= gormLogger.Warn:
-			golog.Default.Warnf(DBFmtWithNoError, msElapsed, rows, sql, file)
-		case dbLogger.LogLevel >= gormLogger.Info:
-			golog.Default.Infof(DBFmtWithNoError, msElapsed, rows, sql, file)
-		}
+	elapsed := time.Since(begin)
+	sql, rows, file, msElapsed := dbLogger.getSqlInfo(fc, elapsed)
+	switch {
+	case err != nil && dbLogger.LogLevel >= gormLogger.Error:
+		golog.Default.Errorf(DBFmtWithError, msElapsed, rows, sql, file, err.Error())
+	case elapsed > dbLogger.SlowThreshold && dbLogger.SlowThreshold != 0 && dbLogger.LogLevel >= gormLogger.Warn:
+		golog.Default.Warnf(DBFmtWithNoError, msElapsed, rows, sql, file)
+	case dbLogger.LogLevel >= gormLogger.Info:
+		golog.Default.Infof(DBFmtWithNoError, msElapsed, rows, sql, file)
+	}
+	if dbLogger.callback != nil {
+		dbLogger.callback(sql, file, rows, msElapsed)
 	}
 }
 
