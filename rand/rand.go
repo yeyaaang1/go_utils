@@ -45,7 +45,7 @@ func RandPassword(min int, max ...int) string {
 	}
 	b := make([]rune, n)
 	for i := range b {
-		b[i] = passwordRunes[mrand.Intn(len(verifyCodeRunes))]
+		b[i] = passwordRunes[mrand.Intn(len(passwordRunes))]
 	}
 	return string(b)
 }
