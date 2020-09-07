@@ -58,12 +58,17 @@ func Result(httpCode int, restData RestData, err error, log ...bool) mvc.Result 
 		"msg":  restData.Msg,
 		"code": restData.Code,
 	}
-	if restData.Data != nil {
-		result["data"] = restData.Data
-	}
 	if err != nil {
 		golog.Default.Error(err.Error())
-		result["error"] = ErrorFormat(err)
+		code, errDetail := ErrorFormat(err)
+		result["error"] = errDetail
+		if code != restData.Code {
+			result["err_code"] = code
+			result["err_msg"] = service_code.GetServerMsg(code)
+		}
+	}
+	if restData.Data != nil {
+		result["data"] = restData.Data
 	}
 	var logout bool
 	if len(log) > 0 {

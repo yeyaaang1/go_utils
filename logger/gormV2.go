@@ -49,7 +49,7 @@ func (dbLogger *dbLogger) Error(ctx context.Context, msg string, data ...interfa
 
 const (
 	DBFmtWithError   = "\033[36;1m[%.2fms]\033[0m \033[36;31m[%d rows affected or returned]\033[0m \n%s\n%s\n\033[31;1m%s\033[0m\n"
-	DBFmtWithNoError = "\033[36;1m[%.2fms]\033[0m \033[36;31m[%d rows affected or returned]\033[0m \n%s\n%s\n"
+	DBFmtWithNoError = "\n\033[36;1m[%.2fms]\033[0m \033[36;31m[%d rows affected or returned]\033[0m \n%s\n%s\n"
 )
 
 func (dbLogger *dbLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
