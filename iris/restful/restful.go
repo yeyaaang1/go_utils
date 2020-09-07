@@ -63,8 +63,14 @@ func Result(httpCode int, restData RestData, err error, log ...bool) mvc.Result 
 		code, errDetail := ErrorFormat(err)
 		result["error"] = errDetail
 		if code != restData.Code {
-			result["err_code"] = code
-			result["err_msg"] = service_code.GetServerMsg(code)
+			msg := service_code.GetServerMsg(code)
+			if restData.Code == service_code.UnknownError {
+				result["code"] = code
+				result["msg"] = msg
+			} else {
+				result["err_code"] = code
+				result["err_msg"] = msg
+			}
 		}
 	}
 	if restData.Data != nil {
