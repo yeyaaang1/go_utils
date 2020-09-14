@@ -23,10 +23,10 @@ type MyDBLogger struct {
 
 func (logger *MyDBLogger) Print(values ...interface{}) {
 	// fmt.Println(fmt.Sprintf("%+v", values))
-	fmt.Println(fmt.Sprintf("%v", values))
+	// fmt.Println(fmt.Sprintf("%v", values))
 	var (
 		level       = values[0]
-		currentTime = "\033[33m[" + time.Now().Format("2006-01-02 15:04:05") + "]\033[0m"
+		currentTime = "\n\033[33m[" + time.Now().Format("2006-01-02 15:04:05") + "]\033[0m"
 		messages    = []interface{}{fmt.Sprintf("\033[35m(%v)\033[0m", values[1]), currentTime}
 	)
 	if level == "sql" {
